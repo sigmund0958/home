@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="ita">
+    <head>
+        <title>HOME</title>
+        <style>
+            body{
+                background: #ffd700;
+                background: linear-gradient(0 deg, #ffd800 50%, #fad201 100%);
+            }
+            #scritta{
+                padding: 30px;
+                font-size: 50px;
+                color: rgb(143, 20, 180);
+                font-weight: bold;
+                display: flex;
+                justify-content: center;
+            }
+            #tasti{
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                flex-direction: column;
+                height: 70vh;
+                gap: 20px;
+                z-index:1;
+            }
+           .bottone{
+            padding: 30px;
+            font-size: 30px;
+            color: black;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+           }
+           .bottone:hover{
+            transform: scale(1.2);
+            transition: 0.3s;
+            color: rgb(143, 20, 180);
+           }
+        </style>
+    </head>
+    <body>
+        <div id="scritta">HOME</div>
+        <div id="tasti">
+            <div id="registrazione">
+                <input type="button" id="registrazione" value="REGISTRATI" class="bottone"/>
+            </div>
+            <div id="accesso">
+                <input type="button" id="accedi" value="ACCEDI" class="bottone"/>
+            </div>
+        </div>
+        <script>
+            let registra= document.getElementById("registrazione");
+            registra.addEventListener("click", onClick);
+            function onClick(){
+                location.href="registrazione.html";
+            }
+            let accedi= document.getElementById("accedi");
+            accedi.addEventListener("click", onClick1);
+            function onClick1(){
+                location.href="accesso.html";
+            }
+        </script>
+    </body>
+</html>
