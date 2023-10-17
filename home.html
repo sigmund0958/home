@@ -49,6 +49,9 @@
             <div id="accesso">
                 <input type="button" id="accedi" value="ACCEDI" class="bottone"/>
             </div>
+            <div id="cerca">
+                <input type="button" id="ricerca" value="RICERCA UTENTE" class="bottone"/>
+            </div>
         </div>
         <script>
             let registra= document.getElementById("registrazione");
@@ -60,6 +63,11 @@
             accedi.addEventListener("click", onClick1);
             function onClick1(){
                 location.href="accesso.html";
+            }
+            let ricerca=document.getElementById("ricerca");
+            ricerca.addEventListener("click", onClick2);
+            function onClick2(){
+                location.href="ricerca.html";
             }
         </script>
     </body>

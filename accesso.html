@@ -77,8 +77,6 @@
                 }
                 let email= document.getElementById("email").value;
                 let psw= document.getElementById("password").value;
-                console.log(email);
-                console.log(psw);
                 xhttp.open("GET", "http://localhost:8080/login?email="+email+"&password="+psw);
                 xhttp.send();
             }
