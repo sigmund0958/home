@@ -71,7 +71,7 @@
                     <input type="button" id="ricerca" value="RICERCA UTENTE" class="bottone"/>
                 </div>
                 <div style="text-align: center">
-                    <input type="button" id="back" value="HOME" class="bottone"/>
+                    <input type="button" id="back1" value="HOME" class="bottone"/>
                 </div>   
             </div>
         </div>
@@ -83,7 +83,7 @@
                 <div id="immagine"></div>
                 <div id="punteggio"></div>
                 <div>
-                    <input type="button" id="back" value="HOME" class="bottone"/>
+                    <input type="button" id="back2" value="HOME" class="bottone"/>
                 </div>   
         </div>  
         <script>
@@ -133,9 +133,14 @@
                 xhttp.open("GET", "http://localhost:8080/read?email="+email);
                 xhttp.send();
             }
-            let back=document.getElementById("back");
+            let back=document.getElementById("back1");
             back.addEventListener("click", onClick1);
             function onClick1(){
+                location.href= "home.html";
+            }
+            let back1=document.getElementById("back2");
+            back1.addEventListener("click", onClick2);
+            function onClick2(){
                 location.href= "home.html";
             }
         </script>
