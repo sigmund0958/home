@@ -101,11 +101,9 @@
             }
            ricerca.addEventListener("click", onClick);
             function onClick(){
-                console.log("ENTRATO");
                 let xhttp= new XMLHttpRequest();
                 xhttp.onreadystatechange= function () {
                     if(this.readyState==4 && this.status==200){
-                        console.log("SUCCESSO");
                         let inserimento= document.getElementById("inserimento");
                         let profilo= document.getElementById("profilo");
                         inserimento.style.display= 'none';
@@ -125,8 +123,11 @@
                         genere.textContent="Genere: "+ risposta.gender;
                         genre.appendChild(genere);
                     }else{
-                        console.log("FALLITO");
-                        console.log(xhttp.responseText);
+                        var risposta= xhttp.responseText
+                        let risp= document.createElement("d");
+                        risp.textContent= risposta;
+                        console.log(risp);
+                        image.appendChild(risp);
                     }
                 }
                 let email= document.getElementById("email").value;
