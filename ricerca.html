@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ita">
     <head>
-        <title>HOME</title>
+        <title>RICERCA</title>
         <style>
             body{
                 background: #ffd700;
@@ -58,9 +58,47 @@
             transition: 0.3s;
             color: rgb(143, 20, 180);
            }
+           .modale {
+            position: absolute;
+            width: 98%;
+            height: 98%;
+            background-color: rgb(0, 0, 0);
+            background-color: rgba(0, 0, 0, 0.6);
+            z-index: 3;
+        }
+
+        .contenuto {
+            left: 25vw;
+            top: 22vh;
+            background-color: #ffd700;
+            margin: auto;
+            padding: 20px;
+            width: 40%;
+            z-index: 4;
+            font-size: 30px;
+            font-weight: bold;
+            margin-top: 40vh;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-direction: row-reverse;
+        }
+
+        .close {
+            float: right;
+            padding: 20px;
+            font-size: 30px;
+            font-weight: bold;
+            cursor: pointer;
+        }
         </style>
     </head>
     <body>
+        <div id="modale" class="modale" style="display: none;">
+            <div id="contenuto" class="contenuto">
+                <div class="close" id="close">&times;</div>
+            </div>
+        </div>
         <div id="scritta">PROFILO</div>
         <div id="inserimento" style="display: flex;">
             <form >
@@ -71,7 +109,7 @@
                     <input type="button" id="ricerca" value="RICERCA UTENTE" class="bottone"/>
                 </div>
                 <div style="text-align: center">
-                    <input type="button" id="back1" value="HOME" class="bottone"/>
+                    <input type="button" id="back" value="HOME" class="bottone"/>
                 </div>   
             </div>
         </div>
@@ -82,17 +120,21 @@
                 <div id="genere"></div>
                 <div id="immagine"></div>
                 <div id="punteggio"></div>
-                <div>
+                <div id="question">
+                    <input type="button" id="richiesta" value="INVIA RICHIESTA AMICIZIA" class="bottone"/>
+                </div>
+                <div >
                     <input type="button" id="back2" value="HOME" class="bottone"/>
                 </div>   
         </div>  
         <script>
+            let cercato= document.getElementById("mail");
            let date= document.getElementById("data");
            let genre= document.getElementById("genere");
            let image= document.getElementById("immagine");
            let score= document.getElementById("punteggio");
            let ricerca=document.getElementById("ricerca");
-           
+           let mail= document.getElementById("email");
            mail.addEventListener("keyup", (e) => funzione(e));
             function funzione(e){
                 if(e.key==="Enter"){
@@ -101,6 +143,7 @@
             }
            ricerca.addEventListener("click", onClick);
             function onClick(){
+                ricerca.disabled= true;
                 let xhttp= new XMLHttpRequest();
                 xhttp.onreadystatechange= function () {
                     if(this.readyState==4 && this.status==200){
@@ -109,32 +152,39 @@
                         inserimento.style.display= 'none';
                         profilo.style.display= 'flex';
 
-                        var risposta= JSON.parse(xhttp.responseText);
-                        let immagine=document.createElement("d");
-                        immagine.textContent="Immagine: " + risposta.profilePic;
-                        image.appendChild(immagine);
-                        let data=  document.createElement("d");
-                        data.textContent= "Data iscrizione: "+risposta.registrationDate;
-                        date.appendChild(data);
-                        let punteggio= document.createElement("d");
-                        punteggio.textContent= "Punteggio: "+risposta.score;
-                        score.appendChild(punteggio);
-                        let genere= document.createElement("d");
-                        genere.textContent="Genere: "+ risposta.gender;
-                        genre.appendChild(genere);
+                        var contentType = xhttp.getResponseHeader('content-type');
+                        if (contentType && contentType.indexOf('application/json') !== -1){
+                            var risposta= JSON.parse(xhttp.responseText);
+
+                            cercato= risposta.email;
+                            let immagine=document.createElement("d");
+                            immagine.textContent="Immagine: " + risposta.profilePic;
+                            image.appendChild(immagine);
+                            let data=  document.createElement("d");
+                            data.textContent= "Data iscrizione: "+risposta.registrationDate;
+                            date.appendChild(data);
+                            let punteggio= document.createElement("d");
+                            punteggio.textContent= "Punteggio: "+risposta.score;
+                            score.appendChild(punteggio);
+                            let genere= document.createElement("d");
+                            genere.textContent="Genere: "+ risposta.gender;
+                            genre.appendChild(genere);
+                        }else{
+                            var risposta= xhttp.responseText;
+                            let risp= document.createElement("d");
+                            risp.textContent= risposta;
+                            let question=document.getElementById("question");
+                            question.style.display='none';
+                        }                        
                     }else{
-                        var risposta= xhttp.responseText
-                        let risp= document.createElement("d");
-                        risp.textContent= risposta;
-                        console.log(risp);
-                        image.appendChild(risp);
+                       console.log(xhttp.responseText);
                     }
                 }
                 let email= document.getElementById("email").value;
                 xhttp.open("GET", "http://localhost:8080/read?email="+email);
                 xhttp.send();
             }
-            let back=document.getElementById("back1");
+            let back=document.getElementById("back");
             back.addEventListener("click", onClick1);
             function onClick1(){
                 location.href= "home.html";
@@ -143,6 +193,56 @@
             back1.addEventListener("click", onClick2);
             function onClick2(){
                 location.href= "home.html";
+            }
+            let richiesta= document.getElementById("richiesta");
+            richiesta.addEventListener("click", inviaRichiesta);
+            function inviaRichiesta(){
+                let xhttp= new XMLHttpRequest();
+                xhttp.onreadystatechange=function(){
+                    if(this.readyState==4){
+                        if(this.status==200){ //invio richieste impostare status "in attesa"
+                            let modale = document.getElementById('modale');
+                            modale.style.display = "block";
+                            let contenuto = document.getElementById('contenuto'); 
+
+                            var risposta= xhttp.responseText;
+                            let risp= document.createElement("d");
+                            risp.textContent= risposta;
+                            contenuto.appendChild(risp);
+
+                            let close = document.getElementById("close");
+                            close.addEventListener("click", chiudi);
+                            function chiudi() {
+                                modale.style.display = "none";
+                                location.href= "home.html";
+                            }
+                        }else{
+                            let modale = document.getElementById('modale');
+                            modale.style.display = "block";
+                            let contenuto = document.getElementById('contenuto'); 
+
+                            var risposta= xhttp.responseText;
+                            let risp= document.createElement("d");
+                            risp.textContent= risposta;
+                            contenuto.appendChild(risp);
+
+                            let close = document.getElementById("close");
+                            close.addEventListener("click", chiudi);
+                            function chiudi() {
+                                modale.style.display = "none";
+                            }
+                        }
+                    }
+                }
+                let user= sessionStorage.getItem("user");
+                let utente= JSON.parse(user);
+                console.log(utente.email);
+                let  mittente= utente.email;
+                console.log(cercato);
+                var parametri= JSON.stringify({status:"in attesa",sendingUser:{email:mittente}, receivingUser: {email:cercato}});
+                xhttp.open("POST", "http://localhost:8080/createRichiesta")
+                xhttp.setRequestHeader("Content-Type", "application/json");
+                xhttp.send(parametri);
             }
         </script>
     </body>

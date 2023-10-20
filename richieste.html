@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="ita">
+    <head>
+        <title>RICHIESTE</title>
+        <style>
+            body{
+                background: #ffd700;
+                background: linear-gradient(0 deg, #ffd800 50%, #fad201 100%);
+            }
+            #scritta{
+                padding: 30px;
+                font-size: 50px;
+                color: rgb(143, 20, 180);
+                font-weight: bold;
+                display: flex;
+                justify-content: center;
+            }            
+           .bottone{
+            padding: 30px;
+            font-size: 30px;
+            color: black;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+           }
+           .bottone:hover{
+            transform: scale(1.2);
+            transition: 0.3s;
+            color: rgb(143, 20, 180);
+           }
+           #lista{
+                height: 60vh;
+                display: flex;
+                justify-content: flex-start;
+                align-items: flex-start;
+                flex-direction: column;
+                z-index:1;  
+                gap: 20px;
+                padding: 30px;
+                font-size: 30px;
+                font-weight: bold;
+            }
+            #dati{
+                margin-bottom: 5px;
+            }
+            ul{
+                list-style-type: none;
+            }
+            .bottone {
+            padding: 30px;
+            font-size: 30px;
+            color: black;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .bottone:hover {
+            transform: scale(1.2);
+            transition: 0.3s;
+            color: rgb(143, 20, 180);
+        }
+        .modale {
+            position: absolute;
+            width: 98%;
+            height: 98%;
+            background-color: rgb(0, 0, 0);
+            background-color: rgba(0, 0, 0, 0.6);
+            z-index: 3;
+        }
+
+        .contenuto {
+            left: 25vw;
+            top: 22vh;
+            background-color: #ffd700;
+            margin: auto;
+            padding: 20px;
+            width: 40%;
+            z-index: 4;
+            font-size: 30px;
+            font-weight: bold;
+            margin-top: 40vh;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-direction: row-reverse;
+        }
+
+        .close {
+            float: right;
+            padding: 20px;
+            font-size: 30px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        </style>
+    </head>
+    <body>
+        <div id="scritta">RICHIESTE</div>
+        <div id="modale" class="modale" style="display: none;">
+            <div id="contenuto" class="contenuto">
+                <div class="close" id="close">&times;</div>
+            </div>
+        </div>
+        <div id="lista">
+            <div id="base" class="tasti" >   
+                <div id="dati">
+                    <ul id="datiLista">
+
+                    </ul>
+                </div>         
+                <div id="accesso">
+                    <input type="button" id="back" value="HOME" class="bottone"/>
+                </div>
+            </div>
+        </div>        
+        <script>
+            window.addEventListener('load', caricamento);
+            let datiLista= document.getElementById("datiLista");
+
+            function risultato(state, mittente, cercato){
+                let xhttp2= new XMLHttpRequest();
+                xhttp2.onreadystatechange=function(){
+                    if(this.readyState==4){
+                        if(this.status==200){
+                            let modale = document.getElementById('modale');
+                            modale.style.display = "block";
+                            let contenuto = document.getElementById('contenuto'); 
+
+                            var risposta= xhttp2.responseText;
+                            let risp= document.createElement("d");
+                            risp.textContent= risposta;
+                            contenuto.appendChild(risp);
+
+                            let close = document.getElementById("close");
+                            close.addEventListener("click", chiudi);
+                            function chiudi() {
+                                modale.style.display = "none";
+                                location.reload();
+                            }
+                        }
+                    }
+                }
+                var parametri= JSON.stringify({status:state ,sendingUser:{email:mittente}, receivingUser: {email:cercato}});
+                xhttp2.open("PUT", "http://localhost:8080/updateRichiesta");
+                xhttp2.setRequestHeader("Content-Type", "application/json");
+                xhttp2.send(parametri);
+            }
+            function caricamento(){
+                let xhttp= new XMLHttpRequest();
+                xhttp.onreadystatechange=function(){
+                 if(this.readyState==4){
+                    if(this.status==200){
+                        var contentType = xhttp.getResponseHeader('content-type');
+                        if (contentType && contentType.indexOf('application/json') !== -1) {
+                            let risposta= JSON.parse(xhttp.responseText);
+                            let richieste=[];
+
+                            risposta.forEach(item => {
+                                let oggetto= {
+                                    status: item.status,
+                                    mittente: item.sendingUser.email,
+                                    cercato: item.receivingUser.email
+                                }
+                                richieste.push(oggetto);
+                            });
+                            
+                            richieste.forEach(function(oggetto){
+                                let oggettoLi=document.createElement('li');
+                                if(oggetto.status ==='in attesa'){      
+                                    
+                                    oggettoLi.textContent= oggetto.mittente;
+                                    datiLista.appendChild(oggettoLi);
+                                
+                                    var accettaButton = document.createElement('button');
+                                    accettaButton.textContent = 'Accetta'; 
+                                    datiLista.appendChild(accettaButton);                                   
+                                    accettaButton.addEventListener("click",()=> {
+                                        risultato("accettata", oggetto.mittente, oggetto.cercato)
+                                    });
+                                    accettaButton.className="bottone";
+
+                                    var rifiutaButton = document.createElement('button');
+                                    rifiutaButton.textContent = 'Rifiuta';
+                                    datiLista.appendChild(rifiutaButton);
+                                    rifiutaButton.addEventListener("click", ()=> {
+                                        risultato("accettata", oggetto.mittente, oggetto.cercato)
+                                    });
+                                    rifiutaButton.className="bottone";                                   
+                                }                                
+                            })
+
+                        }else{
+                            var risposta= xhttp.responseText;
+                            let risp= document.createElement("d");
+                            risp.textContent= risposta;
+                            dati.appendChild(risp);
+                        }
+                    }
+                 }   
+                }
+                let user=JSON.parse(sessionStorage.getItem("user"));
+                xhttp.open("GET", "http://localhost:8080/readReceiving?email="+user.email);
+                xhttp.send();
+            }
+          let back = document.getElementById("back");
+            back.addEventListener("click", onClick1);
+            function onClick1() {
+                location.href = "home.html";
+            }  
+        </script>
+    </body>
+</html>

@@ -15,7 +15,7 @@
                 display: flex;
                 justify-content: center;
             }
-            #tasti{
+            .tasti{
                 display: flex;
                 justify-content: center;
                 align-items: center;
@@ -42,18 +42,33 @@
     </head>
     <body>
         <div id="scritta">HOME</div>
-        <div id="tasti">
+        <div id="base" class="tasti" style="display: flex;">
             <div id="registrazione">
                 <input type="button" id="registrazione" value="REGISTRATI" class="bottone"/>
             </div>
             <div id="accesso">
                 <input type="button" id="accedi" value="ACCEDI" class="bottone"/>
             </div>
+        </div>
+        <div id="acceduto" class="tasti" style="display: none;">
+            <div id="richieste">
+                <input type="button" id="richieste" value="RICHIESTE" class="bottone"/>
+            </div>
             <div id="cerca">
                 <input type="button" id="ricerca" value="RICERCA UTENTE" class="bottone"/>
             </div>
+            <div id="out">
+                <input type="button" id="logout" value="LOGOUT" class="bottone"/>
+            </div>
         </div>
         <script>
+            console.log(sessionStorage);
+            if(sessionStorage.getItem("user")!=null){
+                let base=document.getElementById("base");
+                let acceduto=document.getElementById("acceduto");
+                base.style.display='none';
+                acceduto.style.display='flex';
+            }
             let registra= document.getElementById("registrazione");
             registra.addEventListener("click", onClick);
             function onClick(){
@@ -68,6 +83,17 @@
             ricerca.addEventListener("click", onClick2);
             function onClick2(){
                 location.href="ricerca.html";
+            }
+            let logout= document.getElementById("logout");
+            logout.addEventListener("click", onClick3);
+            function onClick3(){
+                sessionStorage.clear();
+                location.reload();
+            }
+            let richieste= document.getElementById("richieste");
+            richieste.addEventListener("click", onClick4);
+            function onClick4(){
+                location.href= "richieste.html";
             }
         </script>
     </body>
